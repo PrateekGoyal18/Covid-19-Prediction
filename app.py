@@ -51,8 +51,6 @@ def index():
 		df_india_1 = pd.DataFrame.from_dict(df_india_json_1, orient="index")
 
 		lastUpdateIn = df_india.iloc[0,0]
-		# date_split = lastUpdateIn.split("-")
-		# lastUpdateIn = date_split[2] + "/" + date_split[1] + "/" + date_split[0]
 		lastUpdateIn = datetime.datetime.strptime(lastUpdateIn, "%Y-%m-%d").strftime("%d/%m/%Y")
 		lastUpdateGlo = lastUpdateIn
 
@@ -88,8 +86,6 @@ def index():
 		df_india_1 = pd.DataFrame.from_dict(df_india_json_1, orient="index")
 
 		lastUpdateIn = df_india.iloc[0,0]
-		# date_split = lastUpdateIn.split("-")
-		# lastUpdateIn = date_split[2] + "/" + date_split[1] + "/" + date_split[0]
 		lastUpdateIn = datetime.datetime.strptime(lastUpdateIn, "%Y-%m-%d").strftime("%d/%m/%Y")
 		lastUpdateGlo = lastUpdateIn
 
@@ -125,27 +121,77 @@ def index():
 		stateData_actual = pd.read_csv('actual.csv')
 		predicted.to_csv('predicted.csv', header=False)
 		stateData_predicted = pd.read_csv('predicted.csv')
-
-		print(stateData_actual)
-		print(stateData_predicted)
 		
+		data = pd.read_csv(filename)
+		states = data['States']
+
 	    # Available Font Families: "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", 
 	    # "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", 
 	    # "PT Sans Narrow", "Raleway", "Times New Roman".
 		fig = go.Figure()
 		fig.add_trace(go.Scatter(x=stateData_actual['States'], 
-			y=stateData_actual[stateData_actual.columns[index+1]],
-		                    mode='lines',
-		                    name='Actual'))
+			y=stateData_actual[stateData_actual.columns[index+1]], 
+			mode='lines+markers', name='Actual'))
 		fig.add_trace(go.Scatter(x=stateData_predicted['States'], 
 			y=stateData_predicted[stateData_predicted.columns[index+1]],
-		                    mode='lines+markers',
-		                    name='Predicted'))
-		div = fig.to_html(full_html=False)
+			mode='lines+markers', name='Predicted'))
 
-		filename = "covid_30 - covid_30.csv"
-		data = pd.read_csv(filename)
-		states = data['States']
+		fig.update_xaxes(title_text="Date", title_standoff = 5,
+            title_font=dict(size=14, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=45, tickfont=dict(family='Rockwell', color='black', size=10),
+            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+            showgrid=True, gridwidth=1, gridcolor='White',
+            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+		fig.update_yaxes(title_text="Confirmed Cases", title_standoff = 5,
+            title_font=dict(size=14, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black', size=10),
+            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+            showgrid=True, gridwidth=1, gridcolor='White',
+            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+		fig.update_layout(
+			title=dict(text=selectedState, 
+	            	font=dict(family='Times New Roman', size=25, color='#ff0000')),
+			showlegend=True,
+            legend_orientation="v",
+            legend=dict(
+                title="<b> Parameters </b>",
+                traceorder="normal",
+                font=dict(
+                    family="Courier New, monospace",
+                    size=12,
+                    color="black"
+                ),
+                bgcolor="whitesmoke",
+                bordercolor="Black",
+                borderwidth=2
+                ),
+            plot_bgcolor='#C0C0C0',
+	      	paper_bgcolor= '#C0C0C0',
+            )
+		# layout=dict(
+	            
+	 #            font=dict(family='Times New Roman', size=15, color='000'),
+	 #            showlegend=True,
+	 #            legend=dict(bgcolor='layout.paper_bgcolor', bordercolor='#444', borderwidth=0, 
+	 #            	font=dict(family='Times New Roman', size=15, color='000')),
+	 #            orientation='v', #of the legend
+	 #            width=500,
+	 #            height=350,
+	 #            plot_bgcolor='#C0C0C0',
+	 #            paper_bgcolor= '#C0C0C0',
+	 #            xaxis=dict(visible=True, color='000', 
+	 #            	title=dict(text='xaxis', standoff=1, 
+	 #            		font=dict(family='Times New Roman', size=25, color='000')),
+	 #            	nticks=3, tickangle=0, ticks='outside', 
+	 #            	ticklen=8, tickwidth=2, tickcolor='000',
+	 #            	tickfont=dict(family='Times New Roman', size=15, color='000'),
+	 #            	showline=True, linewidth=3, linecolor='black', mirror=False,
+	 #            	showgrid=True, gridwidth=1, gridcolor='fff')
+	 #        )
+
+		div = fig.to_html(full_html=False)
 		
 		return render_template('chart.html', lastUpdateIn=lastUpdateIn, lastUpdateGlo=lastUpdateGlo,
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,

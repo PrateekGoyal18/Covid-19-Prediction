@@ -204,10 +204,10 @@
                     <div class="form-group">
                         <input required id="stateName" name="stateName" style="width:12em" placeholder="State Name">
                         &nbsp;
-                       <input id="submit" type="submit" value="Submit" disabled>
+                       <input id="submit" type="submit" value="Submit">
                    </div>
                 </form>
-                <script type="text/javascript">
+                <!-- <script type="text/javascript">
                     document.querySelector('#stateName').onkeyup = function() 
                     {
                         if(document.querySelector('#stateName').value == '')
@@ -215,7 +215,7 @@
                         else
                             document.querySelector('#submit').disabled = false;
                     }
-                </script>
+                </script> -->
                 {% block bodyContent %}{% endblock %}
             </div>
 

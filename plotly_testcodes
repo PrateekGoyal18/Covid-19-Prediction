@@ -118,3 +118,58 @@ graphs = [
 	        )
 	    )
 	]
+
+
+
+
+fig = make_subplots(
+            rows=3, cols=2, 
+            subplot_titles=("<b> Voltage Plot </b>", "<b> Current Plot </b>", "<b> Frequency Plot </b>", 
+                "<b> Powers Plot </b>", "<b> Power Factor Plot </b>", "<b> THDs Plot </b>"),
+            horizontal_spacing = 0.15,
+            vertical_spacing = 0.18
+            )
+
+        # Add subplots and their traces in the legend
+        fig.add_trace(go.Scatter(x=df['Time'], y=df['Voltage'],
+            mode='lines+markers', name="Voltage (V)"), 
+            row=1, col=1)
+        fig.add_trace(go.Scatter(x=df['Time'], y=df['Current'], 
+            mode='lines+markers', name="Current (A)"), 
+            row=1, col=2)
+
+        # Update x-axis properties
+        fig.update_xaxes(title_text="Time", title_standoff = 5,
+            title_font=dict(size=14, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=45, tickfont=dict(family='Rockwell', color='black', size=10),
+            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+            showgrid=True, gridwidth=1, gridcolor='White',
+            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+        # Update y-axis properties
+        fig.update_yaxes(title_text="Voltage", title_standoff = 5,
+            title_font=dict(size=14, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black', size=10),
+            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+            showgrid=True, gridwidth=1, gridcolor='White',
+            showline=True, linewidth=2, linecolor='black', mirror=False,
+            row=1, col=1)
+
+        # Tweek layout UI  parameters
+        fig.update_layout(
+            height=1000, width=1300,
+            showlegend=True,
+            legend_orientation="v",
+            legend=dict(
+                title="<b> Parameters </b>",
+                traceorder="normal",
+                font=dict(
+                    family="Courier New, monospace",
+                    size=12,
+                    color="black"
+                ),
+                bgcolor="whitesmoke",
+                bordercolor="Black",
+                borderwidth=2
+                )
+            )
