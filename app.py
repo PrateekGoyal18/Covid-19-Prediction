@@ -1,6 +1,7 @@
 from flask import Flask, render_template, Markup, url_for, request, redirect, send_file
 import requests
 import json
+import csv
 import plotly
 import plotly.graph_objects as go
 import plotly.express as px
@@ -9,6 +10,8 @@ import numpy as np
 import urllib, json
 import pandas as pd
 import datetime
+import os
+import unicodedata
 
 app = Flask(__name__)
 
@@ -25,9 +28,8 @@ def index():
 		os.remove('output.csv')
 
 		for i in countriesNames:
-			countryData = data[i]
+			countryData = df[i]
 			name = "Files/" + str(i) + ".csv"
-			print(name)
 			data_file = open(name, 'w') 
 			 
 			csv_writer = csv.writer(data_file) 
@@ -63,30 +65,19 @@ def index():
 		incRecovIn = recoveredIn - df_india_1.iloc[2,0]
 		incDeaIn = deathsIn - df_india_1.iloc[3,0]
 
-	    # Available Font Families: "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", 
-	    # "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", 
-	    # "PT Sans Narrow", "Raleway", "Times New Roman".
-
-		fig = px.scatter(x=[0, 1, 2, 3, 4], y=[0, 1, 4, 9, 16])
-		div = fig.to_html(full_html=False)
-
-		states = ["Cumulative", "Andhra Pradesh","Arunachal Pradesh ","Assam","Bihar","Chhattisgarh",
-					"Goa", "Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand",
-					"Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya",
-					"Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu",
-					"Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
-					"Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli",
-					"Daman and Diu","Lakshadweep","NCT Delhi","Puducherry"]
+		filename = "covid_30 - covid_30.csv"
+		data = pd.read_csv(filename)
+		states = data['States']
 
 		return render_template('home.html', lastUpdateIn=lastUpdateIn, lastUpdateGlo=lastUpdateGlo,
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
-			column_names=states,
-			div=Markup(div))
+			column_names=states)
 			# confirmedGlo=confirmedGlo, recoveredGlo=recoveredGlo, deathsGlo=deathsGlo, 
 
 	else:
-		selectedState = request.form['stateName']
+		text = request.form['stateName']
+		selectedState = unicodedata.normalize('NFKD', text).encode('ascii','ignore')
 
 		df = pd.read_json("https://pomber.github.io/covid19/timeseries.json")
 		shape = df.shape
@@ -111,22 +102,52 @@ def index():
 		incRecovIn = recoveredIn - df_india_1.iloc[2,0]
 		incDeaIn = deathsIn - df_india_1.iloc[3,0]
 
+		filename = "covid_30 - covid_30.csv"
+		data = pd.read_csv(filename)
+		data.set_index("States")
+		index = data[data["States"]==selectedState].index.values
+		index = int(index)
+		stateNames = data['States'].tolist()
+		items = dict()
+		actual = pd.DataFrame(items)
+		predicted = pd.DataFrame(items)
+
+		actual['States'] = stateNames
+		predicted['States'] = stateNames
+		for col_name in data.columns:
+			if(col_name.find("Actual")>=0):
+				actual[col_name[:-8]] = data[col_name]
+			elif(col_name.find("Predicted")>=0):
+				predicted[col_name[:-11]] = data[col_name]
+		actual = actual.transpose()
+		predicted = predicted.transpose()
+		actual.to_csv('actual.csv', header=False)
+		stateData_actual = pd.read_csv('actual.csv')
+		predicted.to_csv('predicted.csv', header=False)
+		stateData_predicted = pd.read_csv('predicted.csv')
+
+		print(stateData_actual)
+		print(stateData_predicted)
+		
 	    # Available Font Families: "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", 
 	    # "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", 
 	    # "PT Sans Narrow", "Raleway", "Times New Roman".
-
-		fig = px.scatter(x=[0, 1, 2, 3, 4], y=[0, 1, 4, 9, 16])
+		fig = go.Figure()
+		fig.add_trace(go.Scatter(x=stateData_actual['States'], 
+			y=stateData_actual[stateData_actual.columns[index+1]],
+		                    mode='lines',
+		                    name='Actual'))
+		fig.add_trace(go.Scatter(x=stateData_predicted['States'], 
+			y=stateData_predicted[stateData_predicted.columns[index+1]],
+		                    mode='lines+markers',
+		                    name='Predicted'))
 		div = fig.to_html(full_html=False)
 
-		states = ["Cumulative", "Andhra Pradesh","Arunachal Pradesh ","Assam","Bihar","Chhattisgarh",
-					"Goa", "Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand",
-					"Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya",
-					"Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu",
-					"Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
-					"Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli",
-					"Daman and Diu","Lakshadweep","NCT Delhi","Puducherry"]
+		filename = "covid_30 - covid_30.csv"
+		data = pd.read_csv(filename)
+		states = data['States']
 		
-		return render_template('home.html', lastUpdateIn=lastUpdateIn, lastUpdateGlo=lastUpdateGlo,
+		return render_template('chart.html', lastUpdateIn=lastUpdateIn, lastUpdateGlo=lastUpdateGlo,
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
 			column_names=states,
