@@ -136,60 +136,35 @@ def index():
 			y=stateData_predicted[stateData_predicted.columns[index+1]],
 			mode='lines+markers', name='Predicted'))
 
-		fig.update_xaxes(title_text="Date", title_standoff = 5,
-            title_font=dict(size=14, family='Sans-Serif', color='black'),
-            ticks="outside", tickangle=45, tickfont=dict(family='Rockwell', color='black', size=10),
+		fig.update_xaxes(visible=True, title_text="Date", title_standoff = 5,
+            title_font=dict(size=18, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=45, tickfont=dict(family='Rockwell', color='black', size=14),
             tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
             showgrid=True, gridwidth=1, gridcolor='White',
             showline=True, linewidth=2, linecolor='black', mirror=False)
 
-		fig.update_yaxes(title_text="Confirmed Cases", title_standoff = 5,
-            title_font=dict(size=14, family='Sans-Serif', color='black'),
-            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black', size=10),
+		fig.update_yaxes(visible=True, title_text="Confirmed Cases", title_standoff = 5,
+            title_font=dict(size=18, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black', size=14),
             tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
             showgrid=True, gridwidth=1, gridcolor='White',
             showline=True, linewidth=2, linecolor='black', mirror=False)
 
+		graphTitle = str(selectedState) + " Graph"
 		fig.update_layout(
-			title=dict(text=selectedState, 
+			title=dict(text=graphTitle, 
 	            	font=dict(family='Times New Roman', size=25, color='#ff0000')),
 			showlegend=True,
-            legend_orientation="v",
-            legend=dict(
-                title="<b> Parameters </b>",
-                traceorder="normal",
-                font=dict(
-                    family="Courier New, monospace",
-                    size=12,
-                    color="black"
-                ),
-                bgcolor="whitesmoke",
-                bordercolor="Black",
-                borderwidth=2
-                ),
+            legend_orientation="h",
+            font=dict(size=14, family='Courier New, monospace', color='black'),
+            legend=dict(title="<b> Parameters </b>", x=0.6, y=1.2, traceorder="normal",
+                font=dict(family="Courier New, monospace", size=12, color="black"),
+                bgcolor="whitesmoke", bordercolor="Black", borderwidth=2),
+            width=800,
+	        height=450,
             plot_bgcolor='#C0C0C0',
 	      	paper_bgcolor= '#C0C0C0',
             )
-		# layout=dict(
-	            
-	 #            font=dict(family='Times New Roman', size=15, color='000'),
-	 #            showlegend=True,
-	 #            legend=dict(bgcolor='layout.paper_bgcolor', bordercolor='#444', borderwidth=0, 
-	 #            	font=dict(family='Times New Roman', size=15, color='000')),
-	 #            orientation='v', #of the legend
-	 #            width=500,
-	 #            height=350,
-	 #            plot_bgcolor='#C0C0C0',
-	 #            paper_bgcolor= '#C0C0C0',
-	 #            xaxis=dict(visible=True, color='000', 
-	 #            	title=dict(text='xaxis', standoff=1, 
-	 #            		font=dict(family='Times New Roman', size=25, color='000')),
-	 #            	nticks=3, tickangle=0, ticks='outside', 
-	 #            	ticklen=8, tickwidth=2, tickcolor='000',
-	 #            	tickfont=dict(family='Times New Roman', size=15, color='000'),
-	 #            	showline=True, linewidth=3, linecolor='black', mirror=False,
-	 #            	showgrid=True, gridwidth=1, gridcolor='fff')
-	 #        )
 
 		div = fig.to_html(full_html=False)
 		
