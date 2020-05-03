@@ -8,7 +8,6 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 import urllib, json
-import pandas as pd
 import datetime
 import os
 import unicodedata
@@ -20,32 +19,32 @@ def index():
 	if request.method == "GET":
 		df = pd.read_json("https://pomber.github.io/covid19/timeseries.json")
 
-		df.to_csv('output.csv', index=False)
-		with open("output.csv", "rb") as f:
-			reader = csv.reader(f)
-			countriesNames = reader.next()
-			rest = [row for row in reader]
-		os.remove('output.csv')
+		# df.to_csv('output.csv', index=False)
+		# with open("output.csv", "rb") as f:
+		# 	reader = csv.reader(f)
+		# 	countriesNames = reader.next()
+		# 	rest = [row for row in reader]
+		# os.remove('output.csv')
 
-		for i in countriesNames:
-			countryData = df[i]
-			name = "Files/" + str(i) + ".csv"
-			data_file = open(name, 'w') 
+		# for i in countriesNames:
+		# 	countryData = df[i]
+		# 	name = "Files/" + str(i) + ".csv"
+		# 	data_file = open(name, 'w') 
 			 
-			csv_writer = csv.writer(data_file) 
+		# 	csv_writer = csv.writer(data_file) 
 
-			count = 0
-			for datewiseData in countryData: 
-				if count == 0: 
-					header = datewiseData.keys() 
-					csv_writer.writerow(header) 
-					count += 1 
-				csv_writer.writerow(datewiseData.values())
-			data_file.close()
+		# 	count = 0
+		# 	for datewiseData in countryData: 
+		# 		if count == 0: 
+		# 			header = datewiseData.keys() 
+		# 			csv_writer.writerow(header) 
+		# 			count += 1 
+		# 		csv_writer.writerow(datewiseData.values())
+		# 	data_file.close()
 
 		shape = df.shape
-		df_india_json = df.ix[shape[0]-1, 'India']
-		df_india_json_1 = df.ix[shape[0]-2, 'India']
+		df_india_json = df.loc[shape[0]-1, 'India']
+		df_india_json_1 = df.loc[shape[0]-2, 'India']
 
 		df_india = pd.DataFrame.from_dict(df_india_json, orient="index")
 		df_india_1 = pd.DataFrame.from_dict(df_india_json_1, orient="index")
@@ -74,13 +73,14 @@ def index():
 			# confirmedGlo=confirmedGlo, recoveredGlo=recoveredGlo, deathsGlo=deathsGlo, 
 
 	else:
-		text = request.form['stateName']
-		selectedState = unicodedata.normalize('NFKD', text).encode('ascii','ignore')
+		selectedState = request.form['stateName']
+		# selectedState = unicodedata.normalize('NFKD', text).encode('ascii','ignore')
+		# print(type(selectedState))
 
 		df = pd.read_json("https://pomber.github.io/covid19/timeseries.json")
 		shape = df.shape
-		df_india_json = df.ix[shape[0]-1, 'India']
-		df_india_json_1 = df.ix[shape[0]-2, 'India']
+		df_india_json = df.loc[shape[0]-1, 'India']
+		df_india_json_1 = df.loc[shape[0]-2, 'India']
 
 		df_india = pd.DataFrame.from_dict(df_india_json, orient="index")
 		df_india_1 = pd.DataFrame.from_dict(df_india_json_1, orient="index")
@@ -160,7 +160,7 @@ def index():
             legend=dict(title="<b> Parameters </b>", x=0.6, y=1.2, traceorder="normal",
                 font=dict(family="Courier New, monospace", size=12, color="black"),
                 bgcolor="whitesmoke", bordercolor="Black", borderwidth=2),
-            width=800,
+            width=600,
 	        height=450,
             plot_bgcolor='#C0C0C0',
 	      	paper_bgcolor= '#C0C0C0',
@@ -176,4 +176,4 @@ def index():
         
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='192.168.0.14', port=8000, debug=True)
