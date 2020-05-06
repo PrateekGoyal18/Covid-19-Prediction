@@ -1,4 +1,6 @@
 ~~~
+git clone https://github.com/PrateekGoyal18/Covid-19-Prediction.git
+cd Covid-19-Prediction
 source env_test/bin/activate
 pip install -r requirements.txt
 python app.py
