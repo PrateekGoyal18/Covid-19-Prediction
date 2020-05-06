@@ -1,0 +1,224 @@
+# actualVal = int(df['30th April(Actual)'].values)
+		# predictedVal = int(df['30th April(Predicted)'].values)
+		# april30_error = (predictedVal-actualVal)*100/float(predictedVal)
+		# df.insert(loc=3, column='30th April Error(%)', value=[april30_error])
+		# df_styletable.iloc[0,0] = actualVal
+		# df_styletable.iloc[0,1] = predictedVal
+		# df_styletable.iloc[0,2] = april30_error
+
+		# actualVal = int(df['1st May(Actual)'].values)
+		# predictedVal = int(df['1st May(Predicted)'].values)
+		# may1_error = (predictedVal-actualVal)*100/float(predictedVal)
+		# df.insert(loc=6, column='1st May Error(%)', value=[may1_error])
+		# df_styletable.iloc[1,0] = actualVal
+		# df_styletable.iloc[1,1] = predictedVal
+		# df_styletable.iloc[1,2] = may1_error
+
+		# actualVal = int(df['2nd May(Actual)'].values)
+		# predictedVal = int(df['2nd May(Predicted)'].values)
+		# may2_error = (predictedVal-actualVal)*100/float(predictedVal)
+		# df.insert(loc=9, column='2nd May Error(%)', value=[may2_error])
+		# df_styletable.iloc[2,0] = actualVal
+		# df_styletable.iloc[2,1] = predictedVal
+		# df_styletable.iloc[2,2] = may2_error
+
+		# actualVal = int(df['3rd May(Actual)'].values)
+		# predictedVal = int(df['3rd May(Predicted)'].values)
+		# may3_error = (predictedVal-actualVal)*100/float(predictedVal)
+		# df.insert(loc=11, column='3rd May Error(%)', value=[may3_error])
+		# df_styletable.iloc[3,0] = actualVal
+		# df_styletable.iloc[3,1] = predictedVal
+		# df_styletable.iloc[3,2] = may3_error
+
+		# actualVal = int(df['4th May(Actual)'].values)
+		# predictedVal = int(df['4th May(Predicted)'].values)
+		# may4_error = (predictedVal-actualVal)*100/float(predictedVal)
+		# df.insert(loc=11, column='4th May Error(%)', value=[may4_error])
+		# df_styletable.iloc[4,0] = actualVal
+		# df_styletable.iloc[4,1] = predictedVal
+		# df_styletable.iloc[4,2] = may4_error
+
+		# # actualVal = int(df['5th May(Actual)'].values)
+		# predictedVal = int(df['5th May(Predicted)'].values)
+		# # may5_error = (predictedVal-actualVal)*100/predictedVal
+		# # df.insert(loc=11, column='5th May Error(%)', value=[may5_error])
+		# # df_styletable.iloc[5,0] = actualVal
+		# df_styletable.iloc[5,1] = predictedVal
+		# # df_styletable.iloc[5,2] = may5_error
+		
+
+count = 500
+	xScale = np.linspace(0, 100, count)
+	y0_scale = np.random.randn(count)
+	y1_scale = np.random.randn(count)
+	y2_scale = np.random.randn(count)
+
+	# Create a trace
+	trace0 = go.Scatter(
+	    x = xScale,
+	    y = y0_scale
+	)
+	trace1 = go.Scatter(
+	    x = xScale,
+	    y = y1_scale
+	)
+	trace2 = go.Scatter(
+	    x = xScale,
+	    y = y2_scale
+	)
+
+	graphs = [trace0, trace1, trace2]
+	graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+
+
+# Add "ids" to each of the graphs to pass up to the client for templating
+	ids = ['graph-{}'.format(i+1) for i, _ in enumerate(graphs)]
+
+	# Convert the figures to JSON
+	# PlotlyJSONEncoder appropriately converts pandas, datetime, etc
+	# objects to their JSON equivalents
+	# graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
+
+
+
+
+
+fig = px.scatter(x=[0, 1, 2, 3, 4], y=[0, 1, 4, 9, 16])
+	div = fig.to_html(full_html=False)
+	text_file = open("sample.txt", "w")
+	n = text_file.write(div)
+	text_file.close()
+	# print(div)
+
+
+
+
+<div class="row">
+            <!-- {% for id in ids %} -->
+                <!-- <h3>{{id}}</h3> -->
+                <!-- <div class="col-sm" id="{{id}}"></div> -->
+            <!-- {% endfor %} -->
+
+                <!-- <div id="chart" class="chart"> -->
+
+            <script type="text/javascript">
+                var graphs = {{graphJSON | safe}};
+        
+        Plotly.plot('chart',graphs,{}); 
+                // var graphs = {{graphJSON | safe}};
+                // var ids = {{ids | safe}};
+// 
+                // for(var i in graphs)
+                // {
+                    // Plotly.plot(ids[i], graphs[i].data, graphs[i].layout || {});
+                // }
+            </script>
+        </div>
+
+
+
+
+graphs = [
+	    dict(
+	        data=[
+	            dict(
+	                x=[1, 2, 3],
+	                y=[10, 20, 30],
+	                type='scatter'
+	            ),
+	        ],
+	        layout=dict(
+	            title=dict(text='first graph', 
+	            	font=dict(family='Times New Roman', size=25, color='000')),
+	            font=dict(family='Times New Roman', size=15, color='000'),
+	            showlegend=True,
+	            legend=dict(bgcolor='layout.paper_bgcolor', bordercolor='#444', borderwidth=0, 
+	            	font=dict(family='Times New Roman', size=15, color='000')),
+	            orientation='v', #of the legend
+	            width=500,
+	            height=350,
+	            plot_bgcolor='#C0C0C0',
+	            paper_bgcolor= '#C0C0C0',
+	            xaxis=dict(visible=True, color='000', 
+	            	title=dict(text='xaxis', standoff=1, 
+	            		font=dict(family='Times New Roman', size=25, color='000')),
+	            	nticks=3, tickangle=0, ticks='outside', 
+	            	ticklen=8, tickwidth=2, tickcolor='000',
+	            	tickfont=dict(family='Times New Roman', size=15, color='000'),
+	            	showline=True, linewidth=3, linecolor='black', mirror=False,
+	            	showgrid=True, gridwidth=1, gridcolor='fff')
+	        )
+	    ),
+
+	    dict(
+	        data=[
+	            dict(
+	                x=[1, 3, 5],
+	                y=[10, 50, 30],
+	                type='bar'
+	            ),
+	        ],
+	        layout=dict(
+	            title='second graph',
+	            width=500,
+	            height=350
+	        )
+	    )
+	]
+
+
+
+
+fig = make_subplots(
+            rows=3, cols=2, 
+            subplot_titles=("<b> Voltage Plot </b>", "<b> Current Plot </b>", "<b> Frequency Plot </b>", 
+                "<b> Powers Plot </b>", "<b> Power Factor Plot </b>", "<b> THDs Plot </b>"),
+            horizontal_spacing = 0.15,
+            vertical_spacing = 0.18
+            )
+
+        # Add subplots and their traces in the legend
+        fig.add_trace(go.Scatter(x=df['Time'], y=df['Voltage'],
+            mode='lines+markers', name="Voltage (V)"), 
+            row=1, col=1)
+        fig.add_trace(go.Scatter(x=df['Time'], y=df['Current'], 
+            mode='lines+markers', name="Current (A)"), 
+            row=1, col=2)
+
+        # Update x-axis properties
+        fig.update_xaxes(title_text="Time", title_standoff = 5,
+            title_font=dict(size=14, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=45, tickfont=dict(family='Rockwell', color='black', size=10),
+            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+            showgrid=True, gridwidth=1, gridcolor='White',
+            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+        # Update y-axis properties
+        fig.update_yaxes(title_text="Voltage", title_standoff = 5,
+            title_font=dict(size=14, family='Sans-Serif', color='black'),
+            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black', size=10),
+            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+            showgrid=True, gridwidth=1, gridcolor='White',
+            showline=True, linewidth=2, linecolor='black', mirror=False,
+            row=1, col=1)
+
+        # Tweek layout UI  parameters
+        fig.update_layout(
+            height=1000, width=1300,
+            showlegend=True,
+            legend_orientation="v",
+            legend=dict(
+                title="<b> Parameters </b>",
+                traceorder="normal",
+                font=dict(
+                    family="Courier New, monospace",
+                    size=12,
+                    color="black"
+                ),
+                bgcolor="whitesmoke",
+                bordercolor="Black",
+                borderwidth=2
+                )
+            )

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+
+	<link href="https://fonts.googleapis.com/css?family=Cabin:400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:900" rel="stylesheet">
+
+	<link type="text/css" rel="stylesheet" href="static/css/main.css" />
+
+</head>
+
+
+<body style="background-image: linear-gradient(to top, lightgrey 0%, lightgrey 1%, 
+			#e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%);">
+
+	<div id="notfound">
+		<div class="notfound">
+			<div class="notfound-error">
+				<h3>Oops! Page not found</h3>
+				<h1><span>{{ errorCode[0] }}</span><span>{{ errorCode[1] }}</span><span>{{ errorCode[2] }}</span></h1>
+			</div>
+
+			<script type="text/javascript">
+				if ({{ errorCode }} == "404") 
+				{
+					document.write('<h2>we are sorry, but the page you requested was not found</h2>');
+					document.write('<a href="/">Go to Hompage</a>');
+				}
+				else if ({{ errorCode }} == "500")
+				{
+					document.write('<h2>Internal Server Error</h2>');
+					document.write('<a href="/">Go Back</a>');
+				}
+			</script>
+
+		</div>
+	</div>
+</body>
+</html>

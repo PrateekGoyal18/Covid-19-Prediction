@@ -1,53 +1,126 @@
-table.neumorphic{
-  width: 150px;
-  border-spacing: 0;
-  color: #212121;
-  text-align: center;
-  overflow: hidden;
-  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
-  -9px -9px 16px rgba(255, 255, 255, 0.6);
-}
-table.neumorphic thead{
-  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6);
-  background-color: #454d4d
-}
-table.neumorphic th{
-  padding: 7px;
-  background-color: #4e5757;
-  color: #FFFFFF /*text color*/
+/*404 - (1) start*/
+* {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
 }
 
-table.neumorphic>tbody>tr>td {
-  padding: 10px;
-  font-size: 14px;
+body {
+  padding: 0;
+  margin: 0;
+}
+
+#notfound {
   position: relative;
+  height: 100vh;
 }
 
-table.neumorphic>tbody>tr:hover {
-  padding: 20px;
-  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
-  -9px -9px 16px rgba(255, 255, 255, 0.6);
-}
-
-table.neumorphic tr td:first-child::before {
-  content: "";
+#notfound .notfound {
   position: absolute;
-  padding: 7px;
-  top: 0;
-  left: -5000px;
-  width: 10000px;
-  height: 100%;
-  z-index: -10;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
 }
 
-table.neumorphic td:hover::after {
-  content: "";
-  position: absolute;
-  box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6),
-  -9px -9px 16px rgba(255, 255, 255, 0.6);
-  left: 0;
-  top: -5000px;
-  height: 10000px;
+.notfound {
+  max-width: 520px;
   width: 100%;
-  z-index: -1;
+  line-height: 1.4;
+  text-align: center;
 }
+
+.notfound .notfound-error {
+  position: relative;
+  height: 240px;
+}
+
+.notfound .notfound-error h1 {
+  font-family: 'Montserrat', sans-serif;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  font-size: 252px;
+  font-weight: 900;
+  margin: 0px;
+  color: #262626;
+  text-transform: uppercase;
+  letter-spacing: -40px;
+  margin-left: -20px;
+}
+
+.notfound .notfound-error h1>span {
+  text-shadow: -8px 0px 0px #fff;
+}
+
+.notfound .notfound-error h3 {
+  font-family: 'Cabin', sans-serif;
+  position: relative;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #262626;
+  margin: 0px;
+  letter-spacing: 3px;
+  padding-left: 6px;
+}
+
+.notfound h2 {
+  font-family: 'Cabin', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #000;
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
+
+.notfound a {
+  font-family: 'Montserrat', sans-serif;
+  display: inline-block;
+  font-weight: 700;
+  text-decoration: none;
+  color: #fff;
+  text-transform: uppercase;
+  padding: 13px 23px;
+  background: #ff6300;
+  font-size: 18px;
+  -webkit-transition: 0.2s all;
+  transition: 0.2s all;
+}
+
+.notfound a:hover {
+  color: #ff6300;
+  background: #211b19;
+}
+
+@media only screen and (max-width: 767px) {
+  .notfound .notfound-error {
+    height: 200px;
+  }
+  .notfound .notfound-error h1 {
+    font-size: 200px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .notfound .notfound-error {
+    height: 162px;
+  }
+  .notfound .notfound-error h1 {
+    font-size: 162px;
+    height: 150px;
+    line-height: 162px;
+  }
+  .notfound h2 {
+    font-size: 16px;
+  }
+  .notfound a {
+    padding: 7px 15px;
+    font-size: 14px;
+  }
+}
+/*404 - (1) end*/

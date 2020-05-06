@@ -2,246 +2,206 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>Corona Predictor</title>
     <link rel="icon" href="static/img/logo.png" type="image/icon type">
 
-    <!-- load CSS -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400">
-    <!-- Google web font "Open Sans" -->
-    <link rel="stylesheet" href="static/css/bootstrap.min.css">
-    <!-- https://getbootstrap.com/ -->
-    <link rel="stylesheet" href="static/css/templatemo-style.css">
-    <!-- Templatemo style -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
-
     <style type="text/css">
+        #loader {
+            position: fixed;
+            left: 50vw;
+            top: 50vh;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            margin: -40px 0 0 -40px;
+            border: 16px solid #f3f3f3;
+            border-image: radial-gradient(circle, #3a3a3a, #383839, #363638, #333437, #303236, #2c2d32, #28292d, #252429, #1f1c20, #181517, #0f0c0d, #000000);
+            border-radius: 30%;
+            border-top: 16px solid #3498db;
+            width: 60px;
+            height: 60px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .animate-bottom {
+            position: relative;
+            -webkit-animation-name: animatebottom;
+            -webkit-animation-duration: 1s;
+            animation-name: animatebottom;
+            animation-duration: 1s
+        }
+
+        @-webkit-keyframes animatebottom {
+            from { bottom:-100px; opacity:0 }
+            to { bottom:0px; opacity:1 }
+        }
+
+        @keyframes animatebottom {
+            from{ bottom:-100px; opacity:0 } 
+            to{ bottom:0; opacity:1 }
+        }
+
+        #myDiv {
+            display: none;
+            text-align: center;
+        }
+
         .step {
-            float: left;
-            margin-left: 5px;
-            display: inline-block;
+            /*float: left;*/
+            margin-left: 15px;
+            padding-top: 7px;
+            /*display: inline-block;*/
             width: device-width;
             height: device-height;
             border: 1px solid white;
+            box-shadow: 5px 10px 8px 3px #888888;
+        }
+        .line{
+            border-color: #666666; 
+            max-width: 70%;
+        }
+        table{
+            border: 1px solid white;
+            text-align: center;
+        }
+        td {
+            border-bottom: 1px solid black;
+            border-left: 1px solid black;
+            padding: .2em .4em;
+        }
+
+        td:first-child {
+            border-left: none;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        th{
+            background-color: #b5b484;
+            color: #000000;
+            height: 40px;
+            font-weight: bold;
+        }
+        /*tr:first-child {
+            font-weight: bold;
+        }*/
+        tr:nth-child(odd){ 
+            background-color:#595c5b; 
+        }
+        tr:nth-child(even){ 
+            background-color:#526358; 
+        }
+        tr:hover{ 
+            background-color: #f2f2d0;
+            color: #000000;
+        }
+
+        .dataframe {
+            border-collapse: collapse;
+            width: 135%;
         }
         </style>
 
-    <!-- D3.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <!-- Plotly.js -->
-     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-     <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">  
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- <script type="text/javascript">
+            $('#scroll').scrollTo();
+
+            var targetOffset = $('scroll').offset().top;
+            $('html, body').animate({scrollTop: targetOffset}, 1000);
+
+            $(document).ready(function () 
+            {
+                $('html, body').animate({
+                    scrollTop: $('#scroll').offset().top}, 'slow');
+            });
+
+            $(document).ready(function () 
+            {
+                $('html, body').animate({scrollTop: $('#scroll').offset().top}, 'slow');
+            });
+        </script> -->
+
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> -->
+        <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script> -->
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-8QYMMFTKJX"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());  
+            gtag('config', 'G-8QYMMFTKJX');
+        </script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
 </head>
 
-<body>
-    <div class="container">
-        
-        <!-- Header Section -->
-        <div class="row">
-            <div class="col-lg-12">
-                <header class="text-center tm-site-header">
-                    <h1 class="pl-4 tm-site-title">Covid19 Predictor - India</h1>
-                    <hr>
-                </header>
-            </div>
-        </div>
+<body onload="myFunction()" style="
+        /*background-color: #333333; */
+        background-image: radial-gradient(circle, #3a3a3a, #383839, #363638, #333437, #303236, #2c2d32, #28292d, #252429, #1f1c20, #181517, #0f0c0d, #000000);
+        color: #FFFFFF; font-family: 'Open Sans', Helvetica, Arial, sans-serif; font-weight: 300;">
+    
+    <div id="loader"></div>
+    <div style="display:none;" id="myDiv" class="animate-bottom">
+        <script>
+            var myVar;
+            function myFunction()
+            {
+                myVar = setTimeout(showPage, 500);
+            }
 
-        <div class="row">
-            <div class="col-sm"></div>
-            <span class="step">
-                <div class="col-sm">
-                    <h1 class="font-weight-bolder" align="middle">🇮🇳 India</h1>
-                    <h5 align="middle" style="color:#8f979e">Last updated from {{ lastUpdateIn }}</h5>
-                    <br>
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#f92424">{{ confirmedIn }}</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#f92424">[+{{ incConfIn }}]</h5>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Confirmed</h5>
-                            </div>
-                        </div>
+            function showPage() 
+            {
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("myDiv").style.display = "block";
+            }
+        </script>
 
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#24aff9">{{ activeIn }}</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Active</h5>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#24f937">{{ recoveredIn }}</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#24f937">[+{{ incRecovIn }}]</h5>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Recovered</h5>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm">
-                            <div class="col">
-                               <h4 class="font-weight-bold" align="middle" style="color:#f9e924">{{ deathsIn }}</h4>
-                           </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#f9e924">[+{{ incDeaIn }}]</h5>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Deaths</h5>
-                            </div>
-                        </div>
-                    </div>
+        {% block navBar %} {% endblock %}
+
+        <div class="container">
+            {% block header %} {% endblock %}
+
+            <br>
+
+            {% block bodyContent %}{% endblock %}
+            
+            <hr class="line">
+            <footer class="row mt-5 mb-5">
+                <div class="col-lg-12">
+                    <p class="text-center tm-text-gray tm-copyright-text mb-0">Data fetched from <a href="https://github.com/pomber/covid19" target="_blank">github.com/pomber/covid19</a> and cross-checked with <a href="https://www.covid19india.org/ target=_blank">covid19india.org</a></p>
+                    <p class="text-center tm-text-gray tm-copyright-text mb-0">Copyright &copy;
+                        <span class="tm-current-year">2020</span> IIT Delhi</p>
                 </div>
-            </span>
-
-            <span class="step">
-                <div class="col-sm">
-                    <h1 class="font-weight-bolder" align="middle">Global</h1>
-                    <h5 align="middle" style="color:#8f979e">Last updated from {{ lastUpdateGlo }}</h5>
-                    <br>
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#f92424">3498145</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#f92424">[+16796]</h5>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Confirmed</h5>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#24aff9">2126436</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Active</h5>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#24f937">1126721</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Recovered</h5>
-                            </div>
-                        </div>
-                        
-                        <div class="col-sm">
-                            <div class="col">
-                                <h4 class="font-weight-bold" align="middle" style="color:#f9e924">244988</h4>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#f9e924">[+325]</h5>
-                            </div>
-                            <div class="col">
-                                <h5 class="font-weight-bolder" align="middle" style="color:#ffff">Deaths</h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </span>
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
+            </footer>
         </div>
-
-        <br>
-        <hr>
-        <br>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="container" style="overflow-y:scroll; height:500px; width:210px;">
-                    <table class="neumorphic" id="StatesTable" border="1" style="cursor: pointer;">
-                        <!-- <caption>Select the state</caption> -->
-                        <thead>
-                            <tr><th>#States Names</th></tr>
-                        </thead>
-                        <tbody>
-                            {% for col in column_names %}
-                                <tr><td>{{ col }}</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <script language="javascript">
-                    var tbl = document.getElementById("StatesTable");
-                    if (tbl != null) 
-                    {
-                        for (var i = 0; i < tbl.rows.length; i++) 
-                        {
-                            for (var j = 0; j < tbl.rows[i].cells.length; j++)
-                            {
-                                tbl.rows[i].cells[j].onclick = function() { getval(this); };
-                            }
-                        }
-                    }
-                    function getval(cel)
-                    {
-                        document.getElementById("stateName").value = cel.innerHTML;
-                    }
-                </script>
-            </div>
-
-            <div class="col-sm-4">
-                <form class="form-inline" method="POST">
-                    <div class="form-group">
-                        <input required id="stateName" name="stateName" style="width:12em" placeholder="State Name">
-                        &nbsp;
-                       <input id="submit" type="submit" value="Submit">
-                   </div>
-                </form>
-                <!-- <script type="text/javascript">
-                    document.querySelector('#stateName').onkeyup = function() 
-                    {
-                        if(document.querySelector('#stateName').value == '')
-                            document.querySelector('#submit').disabled = true;
-                        else
-                            document.querySelector('#submit').disabled = false;
-                    }
-                </script> -->
-                {% block bodyContent %}{% endblock %}
-            </div>
-
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
-            <div class="col-sm"></div>
-        </div>
-
-
-        <hr>
-
-        <!-- Footer Section -->
-        <footer class="row mt-5 mb-5">
-            <div class="col-lg-12">
-                <p class="text-center tm-text-gray tm-copyright-text mb-0">Data fetched from <a href="https://github.com/pomber/covid19" target="_blank">github.com/pomber/covid19</a> and cross-checked with <a href="https://www.covid19india.org/ target=_blank">covid19india.org</a></p>
-                <p class="text-center tm-text-gray tm-copyright-text mb-0">Copyright &copy;
-                    <span class="tm-current-year">2020</span> IIT Delhi</p>
-            </div>
-        </footer>
     </div>
 
-    <script src="static/js/jquery.min.js"></script>
-    <!-- <script src="js/jquery-3.2.1.slim.min.js"></script> -->
-    <script src="static/js/templatemo-script.js"></script>
+    <!-- <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/index.js"></script> -->
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, Markup, url_for, request, redirect, send_file
+from werkzeug.exceptions import HTTPException
 import requests
 import json
 import csv
@@ -11,37 +12,16 @@ import urllib, json
 import datetime
 import os
 import unicodedata
+import math
 
 app = Flask(__name__)
 
 @app.route('/', methods=["GET", "POST"])
 def index():
+	df = pd.read_csv('https://docs.google.com/spreadsheets/d/1Ak0bZT-2KqIFLeIO8AqnlaTJeTblfopzMDGrRUtDUvg/export?format=csv')
+	df.to_csv('covid-19_india_data.csv', index=False)
 	if request.method == "GET":
 		df = pd.read_json("https://pomber.github.io/covid19/timeseries.json")
-
-		# df.to_csv('output.csv', index=False)
-		# with open("output.csv", "rb") as f:
-		# 	reader = csv.reader(f)
-		# 	countriesNames = reader.next()
-		# 	rest = [row for row in reader]
-		# os.remove('output.csv')
-
-		# for i in countriesNames:
-		# 	countryData = df[i]
-		# 	name = "Files/" + str(i) + ".csv"
-		# 	data_file = open(name, 'w') 
-			 
-		# 	csv_writer = csv.writer(data_file) 
-
-		# 	count = 0
-		# 	for datewiseData in countryData: 
-		# 		if count == 0: 
-		# 			header = datewiseData.keys() 
-		# 			csv_writer.writerow(header) 
-		# 			count += 1 
-		# 		csv_writer.writerow(datewiseData.values())
-		# 	data_file.close()
-
 		shape = df.shape
 		df_india_json = df.loc[shape[0]-1, 'India']
 		df_india_json_1 = df.loc[shape[0]-2, 'India']
@@ -62,20 +42,17 @@ def index():
 		incRecovIn = recoveredIn - df_india_1.iloc[2,0]
 		incDeaIn = deathsIn - df_india_1.iloc[3,0]
 
-		filename = "covid_30 - covid_30.csv"
+		filename = "covid-19_india_data.csv"
 		data = pd.read_csv(filename)
 		states = data['States']
 
 		return render_template('home.html', lastUpdateIn=lastUpdateIn, lastUpdateGlo=lastUpdateGlo,
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
-			column_names=states)
-			# confirmedGlo=confirmedGlo, recoveredGlo=recoveredGlo, deathsGlo=deathsGlo, 
+			column_names=states[1:len(states)])
 
 	else:
 		selectedState = request.form['stateName']
-		# selectedState = unicodedata.normalize('NFKD', text).encode('ascii','ignore')
-		# print(type(selectedState))
 
 		df = pd.read_json("https://pomber.github.io/covid19/timeseries.json")
 		shape = df.shape
@@ -98,7 +75,7 @@ def index():
 		incRecovIn = recoveredIn - df_india_1.iloc[2,0]
 		incDeaIn = deathsIn - df_india_1.iloc[3,0]
 
-		filename = "covid_30 - covid_30.csv"
+		filename = "covid-19_india_data.csv"
 		data = pd.read_csv(filename)
 		data.set_index("States")
 		index = data[data["States"]==selectedState].index.values
@@ -125,20 +102,73 @@ def index():
 		data = pd.read_csv(filename)
 		states = data['States']
 
+		df_table = data
+		df_table_state = df_table.iloc[index]
+		# print(type(df_table_state))
+		df_table_state = df_table_state.to_dict()
+		# print(df_table_state)
+
+		df = pd.DataFrame.from_dict(df_table_state, orient='index')
+		df = df.transpose()
+		df = df.rename(columns = {'States':'Dates'})
+		df['Dates'] = ['Cases']
+		# print(df.columns)
+
+		col_names = ['Actual', 'Predicted', 'Error(%)']
+		index_names = ['30th April', '1st May', '2nd May', '3rd May', '4th May', '5th May', 
+						'6th May', '7th May', '8th May', '9th May', '10th May']
+		df_styletable = pd.DataFrame({}, columns=col_names, index=index_names[:8])
+
+		for i in range(8):
+			actualVal_string = str(index_names[i]) + '(Actual)'
+			predictedVal_string = str(index_names[i]) + '(Predicted)'
+			
+			actualVal = float(df[actualVal_string].values)
+			predictedVal = float(df[predictedVal_string].values)
+			if math.isnan(actualVal)==False and math.isnan(predictedVal)==False:
+				error = (predictedVal-actualVal)*100/predictedVal
+			else:
+				error = float("NaN")
+
+			df_styletable.iloc[i,0] = actualVal
+			df_styletable.iloc[i,1] = predictedVal
+			df_styletable.iloc[i,2] = error
+		
+		df_styletable.fillna('Awaited', inplace=True)
+		
+		# def color_negative_red(value):
+		#   if value < 0:
+		#     color = 'red'
+		#   elif value > 0:
+		#     color = 'green'
+		#   else:
+		#     color = 'black'
+		#   return 'color: %s' % color
+		# style = df_styletable.style.applymap(color_negative_red, subset=['Error(%)'])
+
+		# df_styletable.to_html('table.html')
+		# with open('table.html', 'w') as html:
+		# 	html.write(style.render())
+		
+		table = df_styletable.to_html(index=True, table_id='Check', col_space='5' , justify='center')
+		df_styletable.to_html().replace('border="1"','border="0"')
+
 	    # Available Font Families: "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", 
 	    # "Droid Sans Mono", "Gravitas One", "Old Standard TT", "Open Sans", "Overpass", 
 	    # "PT Sans Narrow", "Raleway", "Times New Roman".
 		fig = go.Figure()
 		fig.add_trace(go.Scatter(x=stateData_actual['States'], 
 			y=stateData_actual[stateData_actual.columns[index+1]], 
-			mode='lines+markers', name='Actual'))
+			mode='lines+markers', name='Actual',
+			line=dict(color='royalblue', width=2)))
 		fig.add_trace(go.Scatter(x=stateData_predicted['States'], 
 			y=stateData_predicted[stateData_predicted.columns[index+1]],
-			mode='lines+markers', name='Predicted'))
+			mode='lines+markers', name='Predicted',
+			line=dict(color='firebrick', width=2, dash='dashdot')))
 
 		fig.update_xaxes(visible=True, title_text="Date", title_standoff = 5,
             title_font=dict(size=18, family='Sans-Serif', color='black'),
-            ticks="outside", tickangle=45, tickfont=dict(family='Rockwell', color='black', size=14),
+            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black', size=14),
             tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
             showgrid=True, gridwidth=1, gridcolor='White',
             showline=True, linewidth=2, linecolor='black', mirror=False)
@@ -157,23 +187,40 @@ def index():
 			showlegend=True,
             legend_orientation="h",
             font=dict(size=14, family='Courier New, monospace', color='black'),
-            legend=dict(title="<b> Parameters </b>", x=0.6, y=1.2, traceorder="normal",
+            legend=dict(x=0.6, y=1.2, traceorder="normal",
                 font=dict(family="Courier New, monospace", size=12, color="black"),
                 bgcolor="whitesmoke", bordercolor="Black", borderwidth=2),
-            width=600,
+            width=700,
 	        height=450,
             plot_bgcolor='#C0C0C0',
 	      	paper_bgcolor= '#C0C0C0',
             )
-
-		div = fig.to_html(full_html=False)
+		config = {'responsive': True}
+		div = fig.to_html(full_html=False, config=config)
 		
 		return render_template('chart.html', lastUpdateIn=lastUpdateIn, lastUpdateGlo=lastUpdateGlo,
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
-			column_names=states,
-			div=Markup(div))
+			column_names=states[1:len(states)],
+			div=Markup(div), table=Markup(table))
         
+@app.route('/info')
+def info():
+	return render_template('info.html')
+
+@app.route('/about')
+def aboutus():
+	return render_template('about.html')
+
+@app.errorhandler(404)
+def not_found(e):
+	return render_template("error_page.html", errorCode='404')
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if isinstance(e, HTTPException):
+        return e
+    return render_template("error_page.html", e=e, errorCode='500'), 500
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.14', port=8000, debug=True)
+    app.run(host='192.168.0.14', debug=True)
