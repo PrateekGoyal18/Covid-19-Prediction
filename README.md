@@ -17,3 +17,4 @@ Depicts a forecasting of India's coronavirus cases - cumulative and statewise.
 ## Built with
 - [Flask](https://flask.palletsprojects.com/en/1.1.x/)
 - [Plotly](https://plotly.com/)
+- Icons from [Icons8](https://icons8.com/)
