@@ -34,13 +34,13 @@ def index():
 		lastUpdateGlo = lastUpdateIn
 
 		confirmedIn = df_india.iloc[1,0]
-		recoveredIn = df_india.iloc[2,0]
-		deathsIn = df_india.iloc[3,0]
+		recoveredIn = df_india.iloc[3,0]
+		deathsIn = df_india.iloc[2,0]
 		activeIn = confirmedIn - recoveredIn - deathsIn
 
 		incConfIn = confirmedIn - df_india_1.iloc[1,0]
-		incRecovIn = recoveredIn - df_india_1.iloc[2,0]
-		incDeaIn = deathsIn - df_india_1.iloc[3,0]
+		incRecovIn = recoveredIn - df_india_1.iloc[3,0]
+		incDeaIn = deathsIn - df_india_1.iloc[2,0]
 
 		filename = "covid-19_india_data.csv"
 		data = pd.read_csv(filename)
@@ -67,13 +67,13 @@ def index():
 		lastUpdateGlo = lastUpdateIn
 
 		confirmedIn = df_india.iloc[1,0]
-		recoveredIn = df_india.iloc[2,0]
-		deathsIn = df_india.iloc[3,0]
+		recoveredIn = df_india.iloc[3,0]
+		deathsIn = df_india.iloc[2,0]
 		activeIn = confirmedIn - recoveredIn - deathsIn
 
 		incConfIn = confirmedIn - df_india_1.iloc[1,0]
-		incRecovIn = recoveredIn - df_india_1.iloc[2,0]
-		incDeaIn = deathsIn - df_india_1.iloc[3,0]
+		incRecovIn = recoveredIn - df_india_1.iloc[3,0]
+		incDeaIn = deathsIn - df_india_1.iloc[2,0]
 
 		filename = "covid-19_india_data.csv"
 		data = pd.read_csv(filename)
@@ -116,10 +116,14 @@ def index():
 
 		col_names = ['Actual', 'Predicted', 'Error(%)']
 		index_names = ['30th April', '1st May', '2nd May', '3rd May', '4th May', '5th May', 
-						'6th May', '7th May', '8th May', '9th May', '10th May']
-		df_styletable = pd.DataFrame({}, columns=col_names, index=index_names[:8])
+						'6th May', '7th May', '8th May', '9th May', '10th May', '11th May',
+						'12th May', '13th May', '14th May', '15th May', '16th May', '17th May', 
+						'18th May', '19th May', '20th May', '21st May', '22nd May', '23rd May']
+		startDate = 8
+		endDate = 18
+		df_styletable = pd.DataFrame({}, columns=col_names, index=index_names[startDate:endDate])
 
-		for i in range(8):
+		for i in range(startDate, endDate):
 			actualVal_string = str(index_names[i]) + '(Actual)'
 			predictedVal_string = str(index_names[i]) + '(Predicted)'
 			
@@ -130,9 +134,9 @@ def index():
 			else:
 				error = float("NaN")
 
-			df_styletable.iloc[i,0] = actualVal
-			df_styletable.iloc[i,1] = predictedVal
-			df_styletable.iloc[i,2] = error
+			df_styletable.iloc[i-startDate,0] = actualVal if actualVal%1 else int(actualVal)
+			df_styletable.iloc[i-startDate,1] = predictedVal if predictedVal%1 else int(predictedVal)
+			df_styletable.iloc[i-startDate,2] = error
 		
 		df_styletable.fillna('Awaited', inplace=True)
 		
@@ -150,7 +154,7 @@ def index():
 		# with open('table.html', 'w') as html:
 		# 	html.write(style.render())
 		
-		table = df_styletable.to_html(index=True, table_id='Check', col_space='5' , justify='center')
+		table = df_styletable.to_html(index=True, col_space='5', justify='center')
 		df_styletable.to_html().replace('border="1"','border="0"')
 
 	    # Available Font Families: "Arial", "Balto", "Courier New", "Droid Sans", "Droid Serif", 

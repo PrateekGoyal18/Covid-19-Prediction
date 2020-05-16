@@ -70,10 +70,12 @@
             border: 1px solid white;
             box-shadow: 5px 10px 8px 3px #888888;
         }
+
         .line{
             border-color: #666666; 
             max-width: 70%;
         }
+
         table{
             border: 1px solid white;
             text-align: center;
@@ -83,7 +85,6 @@
             border-left: 1px solid black;
             padding: .2em .4em;
         }
-
         td:first-child {
             border-left: none;
         }
@@ -91,6 +92,12 @@
             border-bottom: none;
         }
         th{
+            background-color: #b5b484;
+            color: #000000;
+            height: 40px;
+            font-weight: bold;
+        }
+        table#StatesTable th{
             background-color: #b5b484;
             color: #000000;
             height: 40px;
@@ -105,8 +112,12 @@
         tr:nth-child(even){ 
             background-color:#526358; 
         }
-        tr:hover{ 
-            background-color: #f2f2d0;
+        th:hover, tr:hover{ 
+            background-color: #c8f2a7;
+            color: #000000;
+        }
+        table#StatesTable th:hover{
+            background-color: #c8f2a7;
             color: #000000;
         }
 
@@ -114,12 +125,18 @@
             border-collapse: collapse;
             width: 135%;
         }
+        #chartdiv {
+            width: 100%;
+            height: 50vh;
+        }                                      
         </style>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">  
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script> -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
         <!-- <script type="text/javascript">
             $('#scroll').scrollTo();
 
@@ -154,6 +171,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+
+        <!-- <script src="https://www.amcharts.com/lib/3/ammap.js"></script>
+        <script src="https://www.amcharts.com/lib/3/maps/js/indiaLow.js"></script>
+        <script src="https://www.amcharts.com/lib/3/themes/none.js"></script> -->
 </head>
 
 <body onload="myFunction()" style="
@@ -189,7 +210,7 @@
             <hr class="line">
             <footer class="row mt-5 mb-5">
                 <div class="col-lg-12">
-                    <p class="text-center tm-text-gray tm-copyright-text mb-0">Data fetched from <a href="https://github.com/pomber/covid19" target="_blank">github.com/pomber/covid19</a> and cross-checked with <a href="https://www.covid19india.org/ target=_blank">covid19india.org</a></p>
+                    <p class="text-center tm-text-gray tm-copyright-text mb-0">Data fetched from <a href="https://www.mohfw.gov.in/" target="_blank">MoHFW</a>, <a href="https://www.covid19india.org/" target="_blank">covid19india.org</a> and <a href="https://github.com/pomber/covid19" target="_blank">github.com/pomber/covid19</a>
                     <p class="text-center tm-text-gray tm-copyright-text mb-0">Copyright &copy;
                         <span class="tm-current-year">2020</span> IIT Delhi</p>
                 </div>
@@ -197,8 +218,8 @@
         </div>
     </div>
 
-    <!-- <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/index.js"></script> -->
+    <!-- <script src="static/js/jquery.min.js"></script> -->
+    <!-- <script src="static/js/index.js"></script> -->
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

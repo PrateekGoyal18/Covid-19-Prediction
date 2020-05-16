@@ -77,7 +77,7 @@
 //         Counter: $(this).text()
 //     }, 
 //     {
-//         duration: 10000,
+//         duration: 100,
 //         easing: 'swing',
 //         step: function (now) 
 //         {
@@ -94,4 +94,32 @@
 //   step: function() {
 //     $('.count').text(Math.ceil(this.Counter));
 //   }
+// });
+
+// $('.count').each(function () 
+// {
+//     $(this).prop('Counter',0).animate
+//     ({
+//         Counter: $(this).text()
+//     }, 
+//     {
+//         duration: 10000,
+//         easing: 'swing',
+//         step: function (now) 
+//         {
+//             $(this).text(Math.ceil(now));
+//         }
+//     });
+// });
+
+// $('.count').each(function () {
+//     $(this).prop('Counter',0).animate({
+//         Counter: $(this).text()
+//     }, {
+//         duration: 1000,
+//         easing: 'swing',
+//         step: function (now) {
+//             $(this).text(Math.ceil(now));
+//         }
+//     });
 // });
