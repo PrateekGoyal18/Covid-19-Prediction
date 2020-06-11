@@ -146,20 +146,39 @@
             </div>
         </div>
     </div>
+    
     <br>
+
+    {% if table_type=='Main state' %}
     <!-- <div class="vw-100" style="width:device-width;"> -->
     	<div class="container">
     		<div class="row">
-    			<div class="col-4"></div>
-    			<div class="col-4">
+    			<div class="col-1"></div>
+    			<div class="col-8">
     				<!-- <div id="scroll">Arrived at your destination</div> -->
     				{{ table }}
     				<p style="text-align: center; width: 135%; color: #fc9797">*(-)ve error means Actual>Predicted & (+)ve error means Predicted>Actual</p>
     			</div>
     		</div>
-    		<div class="col-4"></div>
+    		<div class="col-1"></div>
     	</div>
     <!-- </div> -->
+
+    {% elif table_type=='Other state' %}
+    <!-- <div class="vw-100" style="width:device-width;"> -->
+        <div class="container">
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <!-- <div id="scroll">Arrived at your destination</div> -->
+                    {{ table }}
+                    <p style="text-align: center; width: 135%; color: #fc9797">*(-)ve error means Actual>Predicted & (+)ve error means Predicted>Actual</p>
+                </div>
+            </div>
+            <div class="col-4"></div>
+        </div>
+    <!-- </div> -->
+    {% endif %}
 
     <!-- <script src="static/js/jquery.min.js"></script> -->
     <!-- <script src="static/js/index.js"></script> -->

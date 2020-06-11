@@ -124,3 +124,23 @@ body {
   }
 }
 /*404 - (1) end*/
+
+@media only screen and (max-width:600px) {
+  div#chartdiv {
+    width: 100vw !important; 
+    height: 400px;
+  }
+
+  table.dataframe th, table.dataframe td {
+    padding: 0px !important;
+  }
+}
+
+div#chartdiv {
+    width: 27vw; 
+    height: 450px;
+  }
+
+table.dataframe th, td {
+  padding: 10px;
+}

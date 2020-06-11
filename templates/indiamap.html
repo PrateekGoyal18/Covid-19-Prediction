@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1">
+   <link rel='stylesheet' id='amcharts2-style-css' href='https://www.amcharts.com/wp-content/themes/amcharts4/css/main.css?ver=20200508-db4' type='text/css' media='all' />
+  <link rel='stylesheet' id='amcharts2-style-demo-css' href='https://www.amcharts.com/wp-content/themes/amcharts4/css/demo.css?ver=20200508-db4' type='text/css' media='all' />
+  <link rel='stylesheet' id='highlight-styles-css' href='https://www.amcharts.com/wp-content/themes/amcharts4/js/highlight/styles/monokai-sublime.css?ver=20200508-db4' type='text/css' media='all' />
+  <!-- <link rel='https://api.w.org/' href='https://www.amcharts.com/wp-json/' /> -->
+</head>
+
+<body>
+    <div class="demo-theme-dark row">
+    <div class="col-md-12 demo-block rounded padding demo-background margin-bottom-big">
+      <!-- <div id="chartdiv"></div> -->
+  <div id="chartdiv" style="width: 100%; height: 400px;"></div>
+</div>
+</div>
+
+  <script type="text/javascript" src="https://www.amcharts.com/lib/3/ammap.js"></script>
+  <!-- <script type="text/javascript" src="https://www.amcharts.com/lib/3/themes/light.js"></script> -->
+  <script type="text/javascript" src="https://www.amcharts.com/lib/3/maps/js/india2019High.js"></script>
+  <!-- <script type='text/javascript' src='https://www.amcharts.com/lib/3/themes/dark.js?ver=20200508-db4'></script> -->
+  <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+  <!-- <script type="text/javascript" src="https://d3js.org/d3-dsv.v1.min.js"></script> -->
+  <!-- <script type="text/javascript" src="https://d3js.org/d3-fetch.v1.min.js"></script> -->
+
+  <script type="text/javascript">
+    var cases = {{ cases_list | tojson }}
+    var min = Math.min(...cases);
+    var max = Math.max(...cases);
+
+    AmCharts.makeChart("chartdiv", {
+      "type": "map",
+      "theme": "light",
+      "dataProvider" : {
+        "map": "india2019High",
+        "getAreasFromMap": true,
+        "areas": []
+      },
+      "areasSettings": {
+      "autoZoom": true,
+      "balloonText": "[[title]]: <strong>[[value]]</strong>",
+      "selectedColor": "#CC0000"
+      },
+      "valueLegend": {
+        "right": 10,
+        "minValue": min,
+        "maxValue": max
+      },
+      "zoomControl": {
+        "minZoomLevel": 0.9
+      },
+      "titles": [{
+        "size": 15,
+        "text": "",
+        "color": "white"
+      }],
+      "listeners": [{
+        "event": "init",
+        "method": updateHeatmap
+      }]
+    });
+
+    function updateHeatmap(event) {
+      var map = event.chart;
+      if (map.dataGenerated)
+        return;
+      if (map.dataProvider.areas.length === 0) {
+        setTimeout(updateHeatmap, 100);
+        return;
+      }
+
+      for (var i=0; i<map.dataProvider.areas.length; i++) {
+        map.dataProvider.areas[i].value = cases[i];
+      }
+      map.dataGenerated = true;
+      map.validateNow();
+    }
+  </script>
+</body>
+
+</html>
