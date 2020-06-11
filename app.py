@@ -53,7 +53,7 @@ def index():
 		html = requests.get(url).content
 		df_list = pd.read_html(html)
 		df = df_list[-1]
-		df_total = df.iloc[[37]]
+		df_total = df.iloc[[36]]
 		confirmedIn = df_total.iloc[0]['Total Confirmed cases*']
 		activeIn = df_total.iloc[0]['Active Cases*']
 		recoveredIn = df_total.iloc[0]['Cured/Discharged/Migrated*']
