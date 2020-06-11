@@ -297,4 +297,4 @@ def handle_exception(e):
     return render_template("error_page.html", e=e, errorCode='500'), 500
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.15', debug=True)
+    app.run(host='127.0.0.1', debug=True)
