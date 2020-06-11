@@ -15,6 +15,9 @@ import pytz
 import os
 import unicodedata
 import math
+import urllib.request
+import time
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -25,39 +28,51 @@ def index():
 	    print()
 	df1 = df
 	
-	df1.drop(df1.tail(5).index,inplace=True)
+	df1.drop(df1.tail(5).index, inplace=True)
 	df1 = df1.drop(['Cured/Discharged/Migrated*','S. No.','Deaths**','Active Cases*'], axis=1)
 	df1.rename(columns={'Name of State / UT': 'State', 'Total Confirmed cases*': 'Cases'}, inplace=True)
 	df1 = df1[~df1.State.str.contains("Cases being reassigned to states", na=False)]
-	df1['State'] = df1['State'].replace({'Dadar Nagar Haveli': 'Dadra and Nagar Haveli'})
-
-	states_svg = {'State': ['Jammu and Kashmir','West Bengal','Uttarakhand','Uttar Pradesh','Tripura','Tamil Nadu','Telengana','Sikkim','Rajasthan','Puducherry','Punjab','Odisha','Nagaland','Mizoram','Madhya Pradesh','Manipur','Meghalaya','Maharashtra','Lakshadweep','Kerala','Karnataka','Ladakh','Jharkhand','Haryana','Himachal Pradesh','Gujarat','Goa','Dadra and Nagar Haveli','Delhi','Daman and Diu','Chhattisgarh','Chandigarh','Bihar','Assam','Arunachal Pradesh','Andhra Pradesh','Andaman and Nicobar Islands']}
+	df1['State'] = df1['State'].replace({'Dadra and Nagar Haveli and Daman and Diu': 'Dadra and Nagar Haveli'})
+	states_svg = {'State': ['Jammu and Kashmir','West Bengal','Uttarakhand','Uttar Pradesh','Tripura','Tamil Nadu','Telangana','Sikkim','Rajasthan','Puducherry','Punjab','Odisha','Nagaland','Mizoram','Madhya Pradesh','Manipur','Meghalaya','Maharashtra','Lakshadweep','Kerala','Karnataka','Ladakh','Jharkhand','Haryana','Himachal Pradesh','Gujarat','Goa','Dadra and Nagar Haveli','Delhi','Daman and Diu','Chhattisgarh','Chandigarh','Bihar','Assam','Arunachal Pradesh','Andhra Pradesh','Andaman and Nicobar Islands']}
 	df2 = DataFrame(states_svg, columns= ['State'])
-	df3=pd.merge(df2, df1, on="State")
+	df3 = pd.merge(df2, df1, on="State")
 	df4 = {'State': "Lakshadweep", 'Cases': 0}
 	df5 = df3.append(df4, ignore_index=True)
 	df4 = {'State': "Daman and Diu", 'Cases': 0}
 	df5 = df5.append(df4, ignore_index=True)
-	df6 = df5.reindex([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,18,19,20,21,22,23,24,25,26,27,36,28,29,30,31,32,33,34])
+	df6 = df5.reindex([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,33,18,19,20,21,22,23,24,25,26,27,34,28,29,30,31,32,33,34])
 	df6.reset_index(drop=True)
 	df6.to_csv('cases_svgformat.csv',index=False)
+	# print(df6)
 	cases_list = list(df6['Cases'])
-
-	df = pd.read_excel("https://docs.google.com/spreadsheets/d/1Ak0bZT-2KqIFLeIO8AqnlaTJeTblfopzMDGrRUtDUvg/export?format=xlsx", sheet_name='Daily Data')
-	df_weekahead = pd.read_excel("https://docs.google.com/spreadsheets/d/1Ak0bZT-2KqIFLeIO8AqnlaTJeTblfopzMDGrRUtDUvg/export?format=xlsx", sheet_name='Week Ahead')
-	df.to_csv('covid-19_india_data.csv', index=False)
-	df_weekahead.to_csv('week ahead data.csv', index=False)
-	
+	# print(cases_list)
+		
 	if request.method == "GET":
+		df = pd.read_excel("https://docs.google.com/spreadsheets/d/1Ak0bZT-2KqIFLeIO8AqnlaTJeTblfopzMDGrRUtDUvg/export?format=xlsx", sheet_name='Daily Data')
+		df_weekahead = pd.read_excel("https://docs.google.com/spreadsheets/d/1Ak0bZT-2KqIFLeIO8AqnlaTJeTblfopzMDGrRUtDUvg/export?format=xlsx", sheet_name='Week Ahead')
+		df.to_csv('covid-19_india_data.csv', index=False)
+		df_weekahead.to_csv('week ahead data.csv', index=False)
+
 		url = 'https://www.mohfw.gov.in/'
 		html = requests.get(url).content
 		df_list = pd.read_html(html)
 		df = df_list[-1]
-		df_total = df.iloc[[36]]
+		df = df.head(-4)
+		df_total = df.iloc[[-1]]
 		confirmedIn = df_total.iloc[0]['Total Confirmed cases*']
 		activeIn = df_total.iloc[0]['Active Cases*']
 		recoveredIn = df_total.iloc[0]['Cured/Discharged/Migrated*']
 		deathsIn = df_total.iloc[0]['Deaths**']
+
+		response = requests.get(url)
+		soup = BeautifulSoup(response.text, 'html.parser')
+		soup.findAll('h2')
+		one_h2_tag = soup.findAll('h2')[0]
+		string = []
+		for x in one_h2_tag:
+			string.append(str(x))
+		makeitastring = ''.join(map(str, string))
+		lastUpdateIn = makeitastring[28:52]
 
 		filename = "covid-19_india_data.csv"
 		data = pd.read_csv(filename)
@@ -254,17 +269,17 @@ def index():
 		table = df_errortable.to_html(index=False, justify='center')
 		
 		return render_template('index.html', 
-			# lastUpdateIn=lastUpdateIn, 
+			lastUpdateIn=lastUpdateIn, 
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			 # incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
 			  column_names=states[1:len(states)], div=Markup(div), table=Markup(table), table_type=table_type, cases_list=cases_list)
 
-		return render_template('index.html',
-			# , lastUpdateIn=lastUpdateIn, 
-			# confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
-			# incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn, 
-			column_names=states[1:len(states)], 
-			cases_list=cases_list)
+		# return render_template('index.html',
+		# 	# , lastUpdateIn=lastUpdateIn, 
+		# 	# confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
+		# 	# incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn, 
+		# 	column_names=states[1:len(states)], 
+		# 	cases_list=cases_list)
 
 	else:
 		selectedState = request.form['stateName']
@@ -273,11 +288,22 @@ def index():
 		html = requests.get(url).content
 		df_list = pd.read_html(html)
 		df = df_list[-1]
-		df_total = df.iloc[[37]]
+		df = df.head(-4)
+		df_total = df.iloc[[-1]]
 		confirmedIn = df_total.iloc[0]['Total Confirmed cases*']
 		activeIn = df_total.iloc[0]['Active Cases*']
 		recoveredIn = df_total.iloc[0]['Cured/Discharged/Migrated*']
 		deathsIn = df_total.iloc[0]['Deaths**']
+
+		response = requests.get(url)
+		soup = BeautifulSoup(response.text, 'html.parser')
+		soup.findAll('h2')
+		one_h2_tag = soup.findAll('h2')[0]
+		string = []
+		for x in one_h2_tag:
+			string.append(str(x))
+		makeitastring = ''.join(map(str, string))
+		lastUpdateIn = makeitastring[28:52]
 
 		filename = "covid-19_india_data.csv"
 		weekahead_filename = "week ahead data.csv"
@@ -469,7 +495,7 @@ def index():
 		table = df_errortable.to_html(index=False, justify='center')
 		
 		return render_template('index.html', 
-			# lastUpdateIn=lastUpdateIn, 
+			lastUpdateIn=lastUpdateIn, 
 			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			 # incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
 			  column_names=states[1:len(states)], div=Markup(div), table=Markup(table), table_type=table_type, cases_list=cases_list)
@@ -482,15 +508,15 @@ def info():
 def aboutus():
 	return render_template('about.html')
 
-@app.errorhandler(404)
-def not_found(e):
-	return render_template("error_page.html", errorCode='404')
+# @app.errorhandler(404)
+# def not_found(e):
+# 	return render_template("error_page.html", errorCode='404')
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    if isinstance(e, HTTPException):
-        return e
-    return render_template("error_page.html", e=e, errorCode='500'), 500
+# @app.errorhandler(Exception)
+# def handle_exception(e):
+#     if isinstance(e, HTTPException):
+#         return e
+#     return render_template("error_page.html", e=e, errorCode='500'), 500
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

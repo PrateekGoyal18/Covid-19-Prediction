@@ -54,7 +54,7 @@
                 <span class="step">
                     <div class="col">
                         <h1 class="font-weight-bolder" style="text-align: center; color: white;"><img src="static/img/india-flag.png" style="width: 9%; height: 10%;"> India</h1>
-                        <!-- <h5 align="middle" style="color:#8f979e">Last updated from {{ lastUpdateIn }}</h5> -->
+                        <h5 align="middle" style="color:#8f979e; font-size: 18px;">as on:{{ lastUpdateIn }}</h5>
                         <br>
                         <div class="row">
                             <div class="col-sm">
@@ -166,6 +166,7 @@
               }
 
               for (var i=0; i<map.dataProvider.areas.length; i++) {
+                console.log(map.dataProvider.areas[i].title, cases[i]);
                 map.dataProvider.areas[i].value = cases[i];
               }
               map.dataGenerated = true;
