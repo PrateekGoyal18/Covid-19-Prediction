@@ -63,9 +63,205 @@ def index():
 		data = pd.read_csv(filename)
 		states = data['States']
 
+		selectedState = 'India'
+
+		weekahead_filename = "week ahead data.csv"
+		data = pd.read_csv(filename)
+		data_weekahead = pd.read_csv(weekahead_filename)
+		states_weekahead = list(data_weekahead['States'])
+		
+		data.set_index("States")
+		index = data[data["States"]==selectedState].index.values
+		index = int(index)
+		stateNames = data['States'].tolist()
+		items = dict()
+		actual = pd.DataFrame(items)
+		predicted = pd.DataFrame(items)
+
+		actual['States'] = stateNames
+		predicted['States'] = stateNames
+		for col_name in data.columns:
+			if(col_name.find("Actual")>=0):
+				actual[col_name[:-8]] = data[col_name]
+			elif(col_name.find("Predicted")>=0):
+				predicted[col_name[:-11]] = data[col_name]
+		actual = actual.transpose()
+		predicted = predicted.transpose()
+		actual.to_csv('actual.csv', header=False)
+		stateData_actual = pd.read_csv('actual.csv')
+		predicted.to_csv('predicted.csv', header=False)
+		stateData_predicted = pd.read_csv('predicted.csv')
+		
+		data = pd.read_csv(filename)
+		states = data['States']
+
+		df_table = data
+		df_table_state = df_table.iloc[index]
+		df_table_state = df_table_state.to_dict()
+
+		df = pd.DataFrame.from_dict(df_table_state, orient='index')
+		df = df.transpose()
+		df = df.rename(columns = {'States':'Dates'})
+		df['Dates'] = ['Cases']
+
+		col_names = ['Actual', 'Predicted', 'Error(%)']
+		index_names = ['30th April', '1st May', '2nd May', '3rd May', '4th May', '5th May', 
+						'6th May', '7th May', '8th May', '9th May', '10th May', '11th May',
+						'12th May', '13th May', '14th May', '15th May', '16th May', '17th May', 
+						'18th May', '19th May', '20th May', '21st May', '22nd May', '23rd May',
+						'24th May', '25th May', '26th May', '27th May', '28th May', '29th May',
+						'30th May', '31st May', '1st June', '2nd June', '3rd June', '4th June',
+						'5th June', '6th June', '7th June', '8th June', '9th June', '10th June',
+						'11th June', '12th June']
+						# '13th June', '14th June', '15th June',
+						# '16th June', '17th June', '18th June', '19th June', '20th June', 
+						# '21st June', '22nd June', '23rd June', '24th June', '25th June',
+						# '26th June', '27th June', '28th June', '29th June', '30th June']
+		startDate = 37
+		endDate = 44
+		df_errortable = pd.DataFrame({}, columns=col_names, index=index_names[startDate:endDate])
+
+		for i in range(startDate, endDate):
+			actualVal_string = str(index_names[i]) + '(Actual)'
+			predictedVal_string = str(index_names[i]) + '(Predicted)'
+			
+			actualVal = float(df[actualVal_string].values)
+			predictedVal = float(df[predictedVal_string].values)
+			if math.isnan(actualVal)==False and math.isnan(predictedVal)==False:
+				error = (predictedVal-actualVal)*100/predictedVal
+			else:
+				error = float("NaN")
+
+			df_errortable.iloc[i-startDate,0] = actualVal if actualVal%1 else int(actualVal)
+			df_errortable.iloc[i-startDate,1] = predictedVal if predictedVal%1 else int(predictedVal)
+			df_errortable.iloc[i-startDate,2] = error
+		df_errortable.fillna('Awaited', inplace=True)
+
+		for state in states_weekahead:
+			if state == selectedState:
+				data_weekahead.set_index("States", inplace=True)
+				list_weekahead = list(data_weekahead.loc[selectedState])
+				df_errortable.insert(2, "Week Ahead Predictions", list_weekahead[startDate:endDate])
+				df_errortable.rename(columns={"Predicted":"Daily Predictions", "Error(%)":"Daily Predictions Error(%)"}, inplace=True)
+				df_errortable.insert(4, "Week Ahead Predictions Error(%)", list_weekahead[startDate:endDate])
+
+				for i in range(7):
+					actualVal = df_errortable.iloc[i,0]
+					if actualVal != 'Awaited':
+						actualVal = float(actualVal)
+					predictedVal = df_errortable.iloc[i,2]
+					if predictedVal != 'Awaited':
+						predictedVal = float(predictedVal)
+					if type(actualVal)==float and type(predictedVal)==float:
+						error = (predictedVal-actualVal)*100/predictedVal
+					else:
+						error = 'Awaited'
+					df_errortable.iloc[i,4] = error
+
+				fig = go.Figure()
+				fig.add_trace(go.Scatter(x=stateData_actual['States'], 
+				y=stateData_actual[stateData_actual.columns[index+1]], 
+				mode='lines+markers', name='Actual',
+				line=dict(color='royalblue', width=2)))
+				fig.add_trace(go.Scatter(x=stateData_predicted['States'], 
+				y=stateData_predicted[stateData_predicted.columns[index+1]],
+				mode='lines+markers', name='Daily Predictions',
+				line=dict(color='firebrick', width=2, dash='dashdot')))
+				fig.add_trace(go.Scatter(x=stateData_predicted['States'], 
+					y=list(data_weekahead.loc[selectedState]),
+					mode='lines+markers', name='Week Ahead Predictions',
+					line=dict(color='green', width=2, dash='dot')))
+
+				fig.update_xaxes(visible=True, title_text="Date", title_standoff = 5,
+		            title_font=dict(size=18, family='Sans-Serif', color='black'),
+		            ticks="outside", tickangle=-35, tickfont=dict(family='Rockwell', color='black'),
+		            tickwidth=2, tickcolor='black', ticklen=8, nticks = 5,
+		            showgrid=True, gridwidth=1, gridcolor='White',
+		            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+				fig.update_yaxes(visible=True, title_text="Confirmed Cases", title_standoff = 5,
+		            title_font=dict(size=18, family='Sans-Serif', color='black'),
+		            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black'),
+		            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+		            showgrid=True, gridwidth=1, gridcolor='White',
+		            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+				graphTitle = str(selectedState) + " Graph"
+				fig.update_layout(
+					title=dict(text=graphTitle, 
+			            	font=dict(family='Times New Roman', size=30, color='#ff0000')),
+					showlegend=True,
+		            legend_orientation="v",
+		            font=dict(size=14, family='Courier New, monospace', color='black'),
+		            legend=dict(x=0.4, y=1.25, traceorder="normal",
+		                # font=dict(family="Courier New, monospace", size=12, color="black"),
+		                # bgcolor="whitesmoke", bordercolor="Black", borderwidth=2
+		                ),
+		            plot_bgcolor='#C0C0C0',
+			      	paper_bgcolor= '#C0C0C0',
+		            )
+				config = {'responsive': True}
+				div = fig.to_html(full_html=False, config=config)
+				table_type = 'Main state'
+				break
+
+			else:
+				fig = go.Figure()
+				fig.add_trace(go.Scatter(x=stateData_actual['States'], 
+					y=stateData_actual[stateData_actual.columns[index+1]], 
+					mode='lines+markers', name='Actual',
+					line=dict(color='royalblue', width=2)))
+				fig.add_trace(go.Scatter(x=stateData_predicted['States'], 
+					y=stateData_predicted[stateData_predicted.columns[index+1]],
+					mode='lines+markers', name='Predicted',
+					line=dict(color='firebrick', width=2, dash='dashdot')))
+
+				fig.update_xaxes(visible=True, title_text="Date", title_standoff = 5,
+		            title_font=dict(size=18, family='Sans-Serif', color='black'),
+		            ticks="outside", tickangle=-35, tickfont=dict(family='Rockwell', color='black'),
+		            tickwidth=2, tickcolor='black', ticklen=8, nticks = 5,
+		            showgrid=True, gridwidth=1, gridcolor='White',
+		            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+				fig.update_yaxes(visible=True, title_text="Confirmed Cases", title_standoff = 5,
+		            title_font=dict(size=18, family='Sans-Serif', color='black'),
+		            ticks="outside", tickangle=0, tickfont=dict(family='Rockwell', color='black'),
+		            tickwidth=2, tickcolor='black', ticklen=8, nticks = 8,
+		            showgrid=True, gridwidth=1, gridcolor='White',
+		            showline=True, linewidth=2, linecolor='black', mirror=False)
+
+				graphTitle = str(selectedState) + " Graph"
+				fig.update_layout(
+					title=dict(text=graphTitle, 
+			            	font=dict(family='Times New Roman', size=30, color='#ff0000')),
+					showlegend=True,
+		            legend_orientation="v",
+		            font=dict(size=14, family='Courier New, monospace', color='black'),
+		            legend=dict(x=0.5, y=1.17, traceorder="normal",
+		                # font=dict(family="Courier New, monospace", size=12, color="black"),
+		                # bgcolor="whitesmoke", bordercolor="Black", borderwidth=2
+		                ),
+		            plot_bgcolor='#C0C0C0',
+			      	paper_bgcolor= '#C0C0C0',
+		            )
+				config = {'responsive': True}
+				div = fig.to_html(full_html=False, config=config)
+				table_type = 'Other state'
+		
+		df_errortable.fillna('Awaited', inplace=True)
+		df_errortable.reset_index(inplace=True)
+		df_errortable.rename(columns = {'index':'Dates'}, inplace=True)
+		table = df_errortable.to_html(index=False, justify='center')
+		
+		return render_template('index.html', 
+			# lastUpdateIn=lastUpdateIn, 
+			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
+			 # incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn,
+			  column_names=states[1:len(states)], div=Markup(div), table=Markup(table), table_type=table_type, cases_list=cases_list)
+
 		return render_template('index.html',
 			# , lastUpdateIn=lastUpdateIn, 
-			confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
+			# confirmedIn=confirmedIn, activeIn=activeIn, recoveredIn=recoveredIn, deathsIn=deathsIn,
 			# incConfIn=incConfIn, incRecovIn=incRecovIn, incDeaIn=incDeaIn, 
 			column_names=states[1:len(states)], 
 			cases_list=cases_list)
